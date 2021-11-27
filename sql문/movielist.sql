@@ -27,6 +27,7 @@ SET time_zone = "+00:00";
 -- 테이블 구조 `movie`
 --
 
+
 CREATE TABLE `movie` (
   `movie_id` int NOT NULL COMMENT '영화번호',
   `title` varchar(30) NOT NULL COMMENT '제목',
