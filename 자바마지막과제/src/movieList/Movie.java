@@ -1,12 +1,14 @@
 package movieList;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,11 +20,13 @@ import DAO.DAO;
 import DTO.DTO;
 
 public class Movie extends JFrame{
-	private String colNames[] = {"¿µÈ­¹øÈ£","Á¦¸ñ","°¨µ¶","Àå¸£","»ó¿µ½Ã°£","Ãâ¿¬ÀÚ","ÆòÁ¡(ÃÑ10Á¡)","°³ºÀ³¯Â¥","»ó¿µµî±Ş"};
+	private String colNames[] = {"ì˜í™”ë²ˆí˜¸","ì œëª©","ê°ë…","ì¥ë¥´","ìƒì˜ì‹œê°„","ì¶œì—°ì","í‰ì (ì´10ì )","ê°œë´‰ë‚ ì§œ","ìƒì˜ë“±ê¸‰"};
+	
+	
 
 	public Movie() {
 
-		setTitle("¿µÈ­ ¸®½ºÆ®");
+		setTitle("ì˜í™” ë¦¬ìŠ¤íŠ¸");
 		setPreferredSize(new Dimension(750,800));
 		setLocation(500,100);
 		Container contentPane = getContentPane();
@@ -41,33 +45,78 @@ public class Movie extends JFrame{
 		JTextField score = new JTextField(6);
 		JTextField date = new JTextField(6);
 		JTextField rate = new JTextField(6);
+		
 
-		JButton button1 = new JButton("Ãß°¡");
-		JButton button2 = new JButton("»èÁ¦");
-		panel.add(new JLabel("Á¦¸ñ"));
+		JButton button1 = new JButton("ì¶”ê°€");
+		JButton b1 = new JButton("ê²€ìƒ‰");
+		JButton button2 = new JButton("ì‚­ì œ");
+		panel.add(new JLabel("ì œëª©"));
 		panel.add(title);	
-		panel.add(new JLabel("°¨µ¶"));
+		panel.add(new JLabel("ê°ë…"));
 		panel.add(director);
-		panel.add(new JLabel("Àå¸£"));
+		panel.add(new JLabel("ì¥ë¥´"));
 		panel.add(summary);
-		panel.add(new JLabel("»ó¿µ½Ã°£"));
+		panel.add(new JLabel("ìƒì˜ì‹œê°„"));
 		panel.add(time);
-		panel.add(new JLabel("Ãâ¿¬ÀÚ"));
+		panel.add(new JLabel("ì¶œì—°ì"));
 		panel.add(performer);
-		panel.add(new JLabel("ÆòÁ¡(ÃÑ10Á¡)"));
+		panel.add(new JLabel("í‰ì (ì´10ì )"));
 		panel.add(score);
-		panel.add(new JLabel("°³ºÀ³¯Â¥"));
+		panel.add(new JLabel("ê°œë´‰ë‚ ì§œ"));
 		panel.add(date);
-		panel.add(new JLabel("»ó¿µµî±Ş"));
+		panel.add(new JLabel("ìƒì˜ë“±ê¸‰"));
 		panel.add(rate);
 
 	
 		panel.add(button1);
+		panel.add(b1);
 		panel.add(button2);
 		contentPane.add(panel,BorderLayout.NORTH);
 		
+		
+		
 		button1.addActionListener(new AddActionListener(table,title,director,summary,time,performer,score,date,rate));
-		//button2.addActionListener(new RemoveActionListener(table));
+		button2.addActionListener(new RemoveActionListener(table));
+		b1.addActionListener(new ActionListener() {
+			DateFormat sdFormat = new SimpleDateFormat("yyyy-mm-dd");
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<DTO> at = new ArrayList<DTO>();
+				DAO da = new DAO();
+				
+	
+				String movieTitle= title.getText();
+				String movieDirector = director.getText();
+				String movieSummary = summary.getText();
+				String moviePerformer = performer.getText();
+				String movieRate = rate.getText();
+				at = da.movieSelectData(movieTitle,movieDirector,movieSummary,moviePerformer,movieRate);
+				
+				if (at.size()==0) {
+					String [] list2 = {"ê²€ìƒ‰ëœ ê²°ê³¼ê°€ ì—†ìŠµë‹ˆë‹¤."};
+					model.addRow(list2);
+				}else {
+					for (int i=0;i<at.size();i++) {
+						DTO dt = at.get(i);
+						String title2 = dt.getTitle();
+						String director2 = dt.getDirector();
+						String summary2 = dt.getSummary();
+						int time2 = dt.getTime();
+						String performer2 = dt.getPerformer();
+						float score2 = dt.getScore();
+						Date date2 = dt.getDate();
+						String rate2 = dt.getRate();
+						
+						String [] list2 = {title2, director2, summary2, Integer.toString(time2), performer2, Float.toString(score2), sdFormat.format(date2), rate2};
+						model.addRow(list2);
+					}
+					
+				}
+				
+			}
+		});
+		
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
@@ -93,6 +142,7 @@ public class Movie extends JFrame{
 			this.date=date;
 			this.rate=rate;
 		}
+		
 		public void actionPerformed(ActionEvent e) {
 			
 			DTO dt = new DTO();
@@ -130,6 +180,10 @@ public class Movie extends JFrame{
 
 			
 	}
+		
+	
+		
+	
 //		public void actionPerformed(ActionEvent e) {
 //			String arr[] = new String[3];
 //			arr[0] = text1.getText();
@@ -140,19 +194,22 @@ public class Movie extends JFrame{
 //		}
 	}
 	
-//	class RemoveActionListener implements ActionListener{
-//		JTable table;
-//		RemoveActionListener(JTable table){
-//			this.table = table;
-//		}
-//		public void actionPerformed(ActionEvent e) {
-//			int row = table.getSelectedRow();
-//			if(row == -1)
-//				return;
-//			DefaultTableModel model = (DefaultTableModel)table.getModel();
-//			model.removeRow(row);
-//		}
+
+	
+	class RemoveActionListener implements ActionListener{
+		JTable table;
+		RemoveActionListener(JTable table){
+			this.table = table;
+		}
+		public void actionPerformed(ActionEvent e) {
+			int row = table.getSelectedRow();
+			if(row == -1)
+				return;
+			DefaultTableModel model = (DefaultTableModel)table.getModel();
+			model.removeRow(row);
+		}
 	}
+}
 
 	
 	

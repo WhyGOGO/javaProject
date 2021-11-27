@@ -1,6 +1,9 @@
 package DAO;
 
 import java.sql.*;
+import java.util.*;
+
+import javax.swing.JTextField;
 
 import DTO.DTO;
 
@@ -10,36 +13,36 @@ public class DAO {
 	
 
 	
-	ResultSet rs = null; // ½ÇÇàÇÑ Äõ¸®¹®ÀÇ °ªÀ» ¹Ş´Â °´Ã¼
+	ResultSet rs = null; // ì‹¤í–‰í•œ ì¿¼ë¦¬ë¬¸ì˜ ê°’ì„ ë°›ëŠ” ê°ì²´
 	Statement st = null; 
 	
 	PreparedStatement ps = null; 
 	
-	public static Connection DAO() { //»ı¼ºÀÚ - µğºñ ¿¬°á ¿ªÇÒÀ» ÇÔ
+	public static Connection DAO() { //ìƒì„±ì - ë””ë¹„ ì—°ê²° ì—­í• ì„ í•¨
 		Connection conn=null; 
 		try {
-			// µ¥ÀÌÅÍº£ÀÌ½º¿Í ¿¬°áÇÏ´Â °´Ã¼
-			String user = "ysu";
-			String pw = "1234";
+			// ë°ì´í„°ë² ì´ìŠ¤ì™€ ì—°ê²°í•˜ëŠ” ê°ì²´
+			String user = "root";
+			String pw = "wjdduq1101!";
 			String url = "jdbc:mysql://localhost:3306/movielist";
 			
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			
 			conn = DriverManager.getConnection(url,user,pw);
-			System.out.println("µğºñ¿¡ ¿¬°áÇÏ¼Ì½À´Ï´Ù.");
+			System.out.println("ë””ë¹„ì— ì—°ê²°í•˜ì˜€ìŠµë‹ˆë‹¤.");
 		}
 		
 		catch (ClassNotFoundException e) {
 			// TODO: handle exception
-			System.out.println("DB µå¶óÀÌ¹ö ·Îµù ½ÇÆĞ");
+			System.out.println("DB ë“œë¼ì´ë²„ ë¡œë”© ì‹¤íŒ¨");
 		}
 		catch (SQLException e) {
 			// TODO: handle exception
-			System.out.println("DB Á¢¼Ó½ÇÆĞ");
+			System.out.println("DB ì ‘ì†ì‹¤íŒ¨");
 		}
 		catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("¿©·¯°¡Áø ÀÌÀ¯ÀÇ ¿¡·¯");
+			System.out.println("ì—¬ëŸ¬ê°€ì§€ ì´ìœ ì˜ ì—ëŸ¬");
 		}
 		return conn;
 	}
@@ -72,6 +75,50 @@ public class DAO {
 			dbClose();
 		}
 	}
+	//ì œëª©ê²€ìƒ‰ìœ¼ë¡œ ì¡°íšŒ
+	public ArrayList<DTO> movieSelectData(String title,String director,String summary,String performer,String rate) {
+		
+		ArrayList<DTO> list = new ArrayList<DTO>();
+		
+		try {
+			Connection conn=DAO();
+			String sql = "select * from movie where title like '"+title+"%' and \n"
+					+"director like '"+director+"%' and \n"
+					+"summary like '"+summary+"%' and \n"
+					+"performer like '"+performer+"%' and \n"
+					+"rate like '"+rate+"%'";
+			
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				DTO dto = new DTO();
+				dto.setTitle(rs.getString(2));
+				dto.setDirector(rs.getString(3));
+				dto.setSummary(rs.getString(4));
+				dto.setTime(rs.getInt(5));
+				dto.setPerformer(rs.getString(6));
+				dto.setScore(rs.getFloat(7));
+				dto.setDate(rs.getDate(8));
+				dto.setRate(rs.getString(9));
+				
+				list.add(dto);
+			}
+			
+			
+			ps.close();
+			conn.close();
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		finally {
+			dbClose();
+		}
+		return list;
+	}
+	
 
 	private void dbClose() {
 		// TODO Auto-generated method stub
@@ -83,7 +130,7 @@ public class DAO {
 			if (ps != null)
 				ps.close();
 		} catch (Exception e) {
-			System.out.println("µğºñ ´İ±â ½ÇÆĞ");
+			System.out.println("ë””ë¹„ë‹«ê¸° ì‹¤íŒ¨");
 		}	
 	}
 }
