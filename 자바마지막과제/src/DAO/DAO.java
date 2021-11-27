@@ -1,8 +1,12 @@
 package DAO;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.*;
 import java.util.*;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import DTO.DTO;
@@ -22,8 +26,8 @@ public class DAO {
 		Connection conn=null; 
 		try {
 			// 데이터베이스와 연결하는 객체
-			String user = "root";
-			String pw = "wjdduq1101!";
+			String user = "ysu";
+			String pw = "1234";
 			String url = "jdbc:mysql://localhost:3306/movielist";
 			
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -51,7 +55,8 @@ public class DAO {
 	public void movieInsertData(DTO data) {
 		try {
 			Connection conn=DAO();
-			String sql = "INSERT INTO movie(title,director,summary,time,performer,score,date,rate) values(?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO movie(title,director,summary,time,performer,score,date,rate,image) values(?,?,?,?,?,?,?,?,?)";
+			FileInputStream fin = new FileInputStream(data.getImage());
 			
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, data.getTitle());
@@ -62,6 +67,7 @@ public class DAO {
 			ps.setFloat(6, data.getScore());
 			ps.setDate(7, data.getDate());
 			ps.setString(8, data.getRate());
+			ps.setBinaryStream(9,fin,(int)data.getImage().length());
 			ps.executeUpdate();
 			
 			
@@ -104,6 +110,8 @@ public class DAO {
 				dto.setDate(rs.getDate(8));
 				dto.setRate(rs.getString(9));
 				
+
+				
 				list.add(dto);
 			}
 			
@@ -144,6 +152,10 @@ public class DAO {
 					dto.setDate(rs.getDate(8));
 					dto.setRate(rs.getString(9));
 
+					Blob b = rs.getBlob(10);
+					ImageIcon img = new ImageIcon(b.getBytes(1, (int) b.length())); 
+					dto.setIco(img);
+					
 					list.add(dto);
 				}
 
@@ -173,8 +185,83 @@ public class DAO {
 			
 		}
 	}
-		
+	//이미지 삽입 메소드
+	public void insertImage(File file) {
+		try {
+			Connection conn = DAO();
+			FileInputStream fin = new FileInputStream(file);
+			String sql = "insert into movielist (image) values (?)";
+			ps = conn.prepareStatement(sql);
+			ps.setBinaryStream(1, fin,(int)file.length());
+			ps.executeUpdate();
+			
+			ps.close();
+			conn.close();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			dbClose();
+		}
+	}
+	
+	//영화 정보 수정메소드
+	public void update_movieList(File file) {
+		try {
+			Connection conn = DAO();
+			FileInputStream fin = new FileInputStream(file);
+			String sql = "insert into movielist (image) values (?)";
+			ps = conn.prepareStatement(sql);
+			ps.setBinaryStream(1, fin,(int)file.length());
+			ps.executeUpdate();
+			
+			ps.close();
+			conn.close();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			dbClose();
+		}
+	}
+	
+	
+	//사용자가 행을 클리간 이미지만 불러오기 
+			public ArrayList<DTO> select_image(int num) {
+				Connection conn=DAO();
+				ArrayList<DTO> list = new ArrayList<DTO>();
+				
+				try {
+					DTO dto = new DTO();
+					String sql = "select image from movie where movie_id=?";
+					ps = conn.prepareStatement(sql);
+					
+					ps.setInt(1,num);
+					rs = ps.executeQuery();
+					
+					while(rs.next()) {
+						Blob b = rs.getBlob(1);
+						ImageIcon img = new ImageIcon(b.getBytes(1, (int) b.length())); 
+						dto.setIco(img);	
+						list.add(dto);
+					}
 
+				}
+				catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+				finally {
+					dbClose();
+				}
+				return list;
+			}
+
+
+	
+	
+	
+	
 	private void dbClose() {
 		// TODO Auto-generated method stub
 		try {	

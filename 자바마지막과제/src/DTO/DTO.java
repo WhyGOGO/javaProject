@@ -1,6 +1,10 @@
 package DTO;
 
+import java.io.File;
 import java.sql.Date;
+
+import javax.swing.*;
+
 
 public class DTO {
 	private String title;
@@ -12,6 +16,17 @@ public class DTO {
 	private Date date;
 	private String rate;
 	private int movieNum;
+	private File image;
+	private ImageIcon ico;
+	
+	
+	
+	public ImageIcon getIco() {
+		return ico;
+	}
+	public void setIco(ImageIcon ico) {
+		this.ico = ico;
+	}
 	
 	public String getTitle() {
 		return title;
@@ -67,7 +82,12 @@ public class DTO {
 	public void setMovieNum(int movieNum) {
 		this.movieNum = movieNum;
 	}
-
+	public File getImage() {
+		return image;
+	}
+	public void setImage(File image) {
+		this.image = image;
+	}
 	
 }
 

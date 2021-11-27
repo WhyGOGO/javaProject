@@ -1,17 +1,18 @@
 package movieList;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -23,13 +24,19 @@ public class Movie extends JFrame{
 	private String colNames[] = {"영화번호","제목","감독","장르","상영시간","출연자","평점(총10점)","개봉날짜","상영등급"};
 	DefaultTableModel model = new DefaultTableModel(colNames,0);
 	JTable table = new JTable(model);
-
+	private JLabel imageLabel;
+	private JFileChooser fileChooser;
+	File selectedFile;
+	private JTextField movieNum,title,director,summary,time,performer,score,date,rate;
+	private JButton images;
+	private JTextField imageName;
+	JButton btn_update,btn_selectedValue;
 	
-
+	
 	public Movie() {
 
 		setTitle("영화 리스트");
-		setPreferredSize(new Dimension(750,800));
+		setPreferredSize(new Dimension(880,1000));
 		setLocation(500,100);
 		Container contentPane = getContentPane();
 		
@@ -37,17 +44,30 @@ public class Movie extends JFrame{
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension(800,70));
 		
-		JTextField title = new JTextField(6);
-		JTextField director = new JTextField(6);
-		JTextField summary = new JTextField(6);
-		JTextField time = new JTextField(6);
-		JTextField performer = new JTextField(6);
-		JTextField score = new JTextField(6);
-		JTextField date = new JTextField(6);
-		JTextField rate = new JTextField(6);
+		imageLabel = new JLabel();
+		imageLabel.setPreferredSize(new Dimension(800,400));
+		JScrollPane spane = new JScrollPane(imageLabel);
+		contentPane.add(spane,BorderLayout.SOUTH);
+
+		
+		
+		 title = new JTextField(6);
+		 director = new JTextField(6);
+		 summary = new JTextField(6);
+		 time = new JTextField(6);
+		 performer = new JTextField(6);
+		 score = new JTextField(6);
+		 date = new JTextField(6);
+		 rate = new JTextField(6);
+		 imageName = new JTextField(6);
+		 images = new JButton("이미지고르기");
 		
 
+		
+		
 		JButton button1 = new JButton("추가");
+		btn_selectedValue = new JButton("값 가져오기");
+		btn_update = new JButton("수정");
 		JButton b1 = new JButton("검색");
 		JButton button2 = new JButton("삭제");
 		panel.add(new JLabel("제목"));
@@ -66,9 +86,13 @@ public class Movie extends JFrame{
 		panel.add(date);
 		panel.add(new JLabel("상영등급"));
 		panel.add(rate);
-
+		panel.add(new JLabel("이미지"));		
+		panel.add(imageName);
+		panel.add(images);
 	
 		panel.add(button1);
+		panel.add(btn_update);
+		panel.add(btn_selectedValue);
 		panel.add(b1);
 		panel.add(button2);
 		contentPane.add(panel,BorderLayout.NORTH);
@@ -76,7 +100,32 @@ public class Movie extends JFrame{
 		printAll();	//일단 전체보여주기	
 		button1.addActionListener(new AddActionListener(table,title,director,summary,time,performer,score,date,rate));
 		button2.addActionListener(new RemoveActionListener(table));
+		btn_selectedValue.addActionListener(new select_recordActionListener());
+		images.addActionListener(new AddImageListener());
+
+//===================================마우스 클릭했을때 이미지 불러오기 ==================
+		table.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				DTO dt1 = new DTO();
+				DAO da = new DAO();
+				int index = table.getSelectedRow();
+				Object movienum = table.getValueAt(index, 0);
+				ArrayList<DTO> at = da.select_image(Integer.parseInt(movienum.toString()));
+				
+				
+				for (int i=0;i<at.size();i++) {
+					DTO dt = at.get(i);
+					imageLabel.setIcon(dt.getIco());
+				}
+							
+			}
+		});
 		
+		
+		
+		
+		
+	
 											//================ 여기 부터 검색기능 ===========
 		b1.addActionListener(new ActionListener() {
 			DateFormat sdFormat = new SimpleDateFormat("yyyy-mm-dd");
@@ -181,6 +230,7 @@ public class Movie extends JFrame{
 			dt.setScore(score1);
 			dt.setDate(date1);
 			dt.setRate(rate1);
+			dt.setImage(selectedFile);
 
 
 			da.movieInsertData(dt);
@@ -246,6 +296,7 @@ public class Movie extends JFrame{
 		for (int i=0;i<dt.size();i++) {
 			DTO dt1 = dt.get(i);		
 			String [] list2 = {String.valueOf(dt1.getMovieNum()),dt1.getTitle(), dt1.getDirector(), dt1.getSummary(),String.valueOf(dt1.getTime()),dt1.getPerformer(),String.valueOf(dt1.getScore()),String.valueOf(dt1.getDate()),String.valueOf(dt1.getRate())};
+			imageLabel.setIcon(dt1.getIco());
 			model.addRow(list2);
 		}
 
@@ -253,8 +304,75 @@ public class Movie extends JFrame{
 		//=============================================== 여기까지 Default select =============================	
 		
 	}
+	
+	
+	
+	
+	//=========================== 이미지 입력하는 버튼 ====================================
+	public class AddImageListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
+			JFrame window = new JFrame();
+			JFileChooser fileChooser = new JFileChooser();
+			int result = fileChooser.showOpenDialog(window);
+			selectedFile = fileChooser.getSelectedFile();
+			
+			if (result == JFileChooser.APPROVE_OPTION) {
+				imageName.setText(String.valueOf(selectedFile));
+			}
+			
+		}
+	}
+	//=========================== 여기까지 이미지 입력하는 버튼 ====================================
 
 	
+	//=========================== 값가져오는 부분 ====================================
+
+	public class select_recordActionListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			Object o = e.getSource();
+			if(o == btn_selectedValue) {
+				int index = table.getSelectedRow();
+				
+				
+				String title_u = (String) table.getValueAt(index, 1);
+				title.setText(title_u);
+				
+				String director_u = (String) table.getValueAt(index, 2);
+				director.setText(director_u);
+
+				String summary_u = (String) table.getValueAt(index, 3);
+				summary.setText(summary_u);
+				
+				String time_u = (String) table.getValueAt(index, 4);
+				time.setText(time_u);
+				
+				String performer_u = (String) table.getValueAt(index, 5);
+				performer.setText(performer_u);
+				
+				String score_u = (String) table.getValueAt(index, 6);
+				score.setText(score_u);
+				
+				String date_u = (String) table.getValueAt(index, 7);
+				date.setText(date_u);
+				
+				String rate_u = (String) table.getValueAt(index, 8);
+				rate.setText(rate_u);
+				
+			
+			}
+		}
+
+	}
+
+	//=========================== 여기까지 값가져오는 부분 ====================================
+
 }
 
 	
