@@ -1,5 +1,7 @@
 package DAO;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.*;
 import java.util.*;
 
@@ -170,7 +172,7 @@ public class DAO {
 			ps.close();
 			conn.close();
 		}catch(Exception e) {
-			
+			e.printStackTrace();
 		}
 	}
 		
@@ -187,5 +189,50 @@ public class DAO {
 		} catch (Exception e) {
 			System.out.println("디비닫기 실패");
 		}	
+	}
+	// imageDB참조해서 선택한 로우의 이미지 업데이트 하는 메소드인데 쓸 일 있을지는 모르겠음
+	public void updateImage(File file, int num) {
+		try {
+			FileInputStream fin = new FileInputStream(file);
+			Connection conn = DAO();
+			String sql = "update movie set image = ? where movie_id = ? ";
+			ps = conn.prepareStatement(sql);
+            ps.setBinaryStream(1,fin,(int)file.length());
+			ps.setInt(2, num);
+			ps.executeUpdate();
+			
+			ps.close();
+			conn.close();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	//모든 이미지컬럼 불러오는 메소드
+	public ArrayList<DTO> showImage() {
+		ArrayList<DTO> list = new ArrayList<DTO>();
+		try {
+			Connection conn=DAO();
+			String sql = "select image from movie";
+			
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				DTO dto = new DTO();
+				dto.setImage(rs.getString(1));
+
+				list.add(dto);
+			}
+
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		finally {
+			dbClose();
+		}
+		return list;
+		
 	}
 }

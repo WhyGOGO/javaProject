@@ -12,6 +12,7 @@ public class DTO {
 	private Date date;
 	private String rate;
 	private int movieNum;
+	private String image;
 	
 	public String getTitle() {
 		return title;
@@ -66,6 +67,12 @@ public class DTO {
 	}
 	public void setMovieNum(int movieNum) {
 		this.movieNum = movieNum;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	

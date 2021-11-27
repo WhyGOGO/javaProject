@@ -6,7 +6,12 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.sql.Blob;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -19,10 +24,21 @@ import javax.swing.table.DefaultTableModel;
 import DAO.DAO;
 import DTO.DTO;
 
-public class Movie extends JFrame{
+public class Movie extends JFrame implements ActionListener{
 	private String colNames[] = {"영화번호","제목","감독","장르","상영시간","출연자","평점(총10점)","개봉날짜","상영등급"};
 	DefaultTableModel model = new DefaultTableModel(colNames,0);
 	JTable table = new JTable(model);
+	
+	private JMenuItem save, view, exit;
+	private JFileChooser fc;
+	private JMenuBar menuBar;
+	private JMenu menu;
+	private JLabel imageLabel;
+	private JLabel textLabel;
+	private int numberOfRecord;
+	private JButton nextButton;
+	private ResultSet viewRS=null;
+	private ImageIcon img=null;
 
 	
 
@@ -46,7 +62,6 @@ public class Movie extends JFrame{
 		JTextField date = new JTextField(6);
 		JTextField rate = new JTextField(6);
 		
-
 		JButton button1 = new JButton("추가");
 		JButton b1 = new JButton("검색");
 		JButton button2 = new JButton("삭제");
@@ -122,11 +137,51 @@ public class Movie extends JFrame{
 			}
 		});
 									//================ 여기까지 검색기능 ===========	
+		
+		//================ 여기부터  이미지 기능 ===========
+		fc = new JFileChooser(); // JFileChooser 객체 생성
+		menuBar = new JMenuBar(); // JMenuBar 컴포넌트를 생성
+		menu = new JMenu("메뉴");
+		menuBar.add(menu); // 메뉴를 메뉴바에 붙인다
+
+		// 서브 메뉴
+		save = new JMenuItem("사진 저장");
+		save.addActionListener(this); // save 메뉴에 대한 이벤트 리스너를 등록
+		menu.add(save); // 메뉴 아이템을 메뉴에 붙인다
+		view = new JMenuItem("모든 사진 보기");
+		menu.add(view); // 메뉴 아이템을 메뉴에 붙인다
+		view.addActionListener(this); // view 메뉴에 대한 이벤트 리스너를 등록
+		menu = new JMenu("종료");
+		exit = new JMenuItem("나가기");
+		exit.addActionListener(this); // exit 메뉴에 대한 이벤트 리스너를 등록
+		menu.add(exit); // 메뉴 아이템을 메뉴에 붙인다
+		menuBar.add(menu); // 메뉴를 메뉴바에 붙인다
+		setJMenuBar(menuBar); // 메뉴바를 프레임에 붙인다
+		
+		imageLabel = new JLabel(); // 이미지를 표시할 레이블 컴포넌트
+		imageLabel.setHorizontalAlignment(SwingConstants.CENTER); // 중앙정렬
+		textLabel = new JLabel(); // 파일 이름을 표시할 레이블 컴포넌트
+		textLabel.setHorizontalAlignment(SwingConstants.CENTER); // 중앙정렬
+		JScrollPane spane = new JScrollPane(imageLabel); // 큰 사이즈의 이미지를 위해  ScrollPane에서 표시
+		
+		JPanel panel2 = new JPanel();
+		panel2.add(spane);
+		panel2.add(textLabel);
+		panel2.setPreferredSize(new Dimension(800, 400));
+		contentPane.add(panel2, BorderLayout.SOUTH);
+		
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
 		
+	}
+	
+	//================ 여기까지 이미지 기능 ===========
 
 	class AddActionListener implements ActionListener{
 		JTable table;
@@ -233,7 +288,7 @@ public class Movie extends JFrame{
 	
 	
 	//================ 여기까지 삭제 기능 ===========================================================	
-	
+		
 	// select 찍어주는 메소드
 	
 	public void printAll() {
@@ -254,7 +309,7 @@ public class Movie extends JFrame{
 		
 	}
 
-	
+
 }
 
 	
