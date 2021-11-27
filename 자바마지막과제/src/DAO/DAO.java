@@ -22,8 +22,8 @@ public class DAO {
 		Connection conn=null; 
 		try {
 			// 데이터베이스와 연결하는 객체
-			String user = "root";
-			String pw = "wjdduq1101!";
+			String user = "ysu";
+			String pw = "1234";
 			String url = "jdbc:mysql://localhost:3306/movielist";
 			
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -46,6 +46,7 @@ public class DAO {
 		}
 		return conn;
 	}
+	
 	
 	public void movieInsertData(DTO data) {
 		try {
@@ -118,7 +119,43 @@ public class DAO {
 		}
 		return list;
 	}
-	
+	//전체 조회
+		public ArrayList<DTO> selectAll_movielist() {
+			
+			ArrayList<DTO> list = new ArrayList<DTO>();
+			
+			try {
+				Connection conn=DAO();
+				String sql = "select * from movie";
+				
+				ps = conn.prepareStatement(sql);
+				rs = ps.executeQuery();
+				
+				while(rs.next()) {
+					DTO dto = new DTO();
+					dto.setTitle(rs.getString(2));
+					dto.setDirector(rs.getString(3));
+					dto.setSummary(rs.getString(4));
+					dto.setTime(rs.getInt(5));
+					dto.setPerformer(rs.getString(6));
+					dto.setScore(rs.getFloat(7));
+					dto.setDate(rs.getDate(8));
+					dto.setRate(rs.getString(9));
+
+					list.add(dto);
+				}
+
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			finally {
+				dbClose();
+			}
+			return list;
+		}
+		
 
 	private void dbClose() {
 		// TODO Auto-generated method stub

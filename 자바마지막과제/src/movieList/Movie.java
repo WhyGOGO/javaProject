@@ -21,7 +21,9 @@ import DTO.DTO;
 
 public class Movie extends JFrame{
 	private String colNames[] = {"영화번호","제목","감독","장르","상영시간","출연자","평점(총10점)","개봉날짜","상영등급"};
-	
+	DefaultTableModel model = new DefaultTableModel(colNames,0);
+	JTable table = new JTable(model);
+
 	
 
 	public Movie() {
@@ -31,8 +33,6 @@ public class Movie extends JFrame{
 		setLocation(500,100);
 		Container contentPane = getContentPane();
 		
-		DefaultTableModel model = new DefaultTableModel(colNames,0);
-		JTable table = new JTable(model);
 		contentPane.add(new JScrollPane(table),BorderLayout.CENTER);
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension(800,70));
@@ -73,15 +73,19 @@ public class Movie extends JFrame{
 		panel.add(button2);
 		contentPane.add(panel,BorderLayout.NORTH);
 		
-		
-		
+		printAll();	//일단 전체보여주기	
 		button1.addActionListener(new AddActionListener(table,title,director,summary,time,performer,score,date,rate));
 		button2.addActionListener(new RemoveActionListener(table));
+		
+											//================ 여기 부터 검색기능 ===========
 		b1.addActionListener(new ActionListener() {
 			DateFormat sdFormat = new SimpleDateFormat("yyyy-mm-dd");
-			
+												
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				DefaultTableModel models = (DefaultTableModel)table.getModel();
+				models.setNumRows(0);
+				
 				ArrayList<DTO> at = new ArrayList<DTO>();
 				DAO da = new DAO();
 				
@@ -116,13 +120,13 @@ public class Movie extends JFrame{
 				
 			}
 		});
-		
-
+									//================ 여기까지 검색기능 ===========	
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}
-	
+		
+
 	class AddActionListener implements ActionListener{
 		JTable table;
 		JTextField title,director,summary,time,performer,score,date,rate;
@@ -142,7 +146,8 @@ public class Movie extends JFrame{
 			this.date=date;
 			this.rate=rate;
 		}
-		
+							//================ 여기부터 추가 기능 ===========	
+
 		public void actionPerformed(ActionEvent e) {
 			
 			DTO dt = new DTO();
@@ -159,6 +164,7 @@ public class Movie extends JFrame{
 			Date date1 = null;
 			try {
 				date1 = new Date(sdf.parse(date.getText()).getTime());
+
 			} catch (ParseException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -175,12 +181,12 @@ public class Movie extends JFrame{
 			dt.setDate(date1);
 			dt.setRate(rate1);
 
-		
-			da.movieInsertData(dt);
 
-			
+			da.movieInsertData(dt);
+			printAll();		
 	}
-		
+						//================ 여기까지 추가 기능 ===========	
+
 	
 		
 	
@@ -193,7 +199,7 @@ public class Movie extends JFrame{
 //			model.addRow(arr);
 //		}
 	}
-	
+						
 
 	
 	class RemoveActionListener implements ActionListener{
@@ -205,10 +211,33 @@ public class Movie extends JFrame{
 			int row = table.getSelectedRow();
 			if(row == -1)
 				return;
+			
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
-			model.removeRow(row);
+			model.removeRow(row);		
 		}
 	}
+	
+	// select 찍어주는 메소드
+	
+	public void printAll() {
+		//=============================================== 여기부터 Default select =============================
+		DefaultTableModel models = (DefaultTableModel)table.getModel();
+		models.setNumRows(0);	// 테이블 초기화
+		
+		DAO da = new DAO();
+		ArrayList<DTO> dt=da.selectAll_movielist();
+		for (int i=0;i<dt.size();i++) {
+			DTO dt1 = dt.get(i);		
+			String [] list2 = {dt1.getTitle(), dt1.getDirector(), dt1.getSummary(),String.valueOf(dt1.getTime()),dt1.getPerformer(),String.valueOf(dt1.getScore()),String.valueOf(dt1.getDate()),String.valueOf(dt1.getRate())};
+			model.addRow(list2);
+		}
+
+		
+		//=============================================== 여기까지 Default select =============================	
+		
+	}
+
+	
 }
 
 	

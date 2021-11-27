@@ -8,10 +8,10 @@ import movieList.Movie;
 import javax.swing.*;
 
 public class dbconn extends JFrame{
-	private JButton btn1 = new JButton("µðºñ ¿¬°áÇÏ±â");
+	private JButton btn1 = new JButton("ë””ë¹„ì—°ê²°í•˜ê¸°");
 
 	public dbconn() {
-		setTitle("µðºñ¿¡ ¿¬°áÇÏ±â");
+		setTitle("ë””ë¹„ì—°ê²°");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		Container c = getContentPane();
 		
