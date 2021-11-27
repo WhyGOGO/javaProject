@@ -11,6 +11,7 @@ public class DTO {
 	private float score;
 	private Date date;
 	private String rate;
+	private int movieNum;
 	
 	public String getTitle() {
 		return title;
@@ -59,6 +60,12 @@ public class DTO {
 	}
 	public void setRate(String rate) {
 		this.rate = rate;
+	}
+	public int getMovieNum() {
+		return movieNum;
+	}
+	public void setMovieNum(int movieNum) {
+		this.movieNum = movieNum;
 	}
 
 	

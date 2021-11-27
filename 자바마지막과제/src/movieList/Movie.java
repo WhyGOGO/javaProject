@@ -103,6 +103,7 @@ public class Movie extends JFrame{
 				}else {
 					for (int i=0;i<at.size();i++) {
 						DTO dt = at.get(i);
+						int movieNum = dt.getMovieNum();
 						String title2 = dt.getTitle();
 						String director2 = dt.getDirector();
 						String summary2 = dt.getSummary();
@@ -112,7 +113,7 @@ public class Movie extends JFrame{
 						Date date2 = dt.getDate();
 						String rate2 = dt.getRate();
 						
-						String [] list2 = {title2, director2, summary2, Integer.toString(time2), performer2, Float.toString(score2), sdFormat.format(date2), rate2};
+						String [] list2 = {Integer.toString(movieNum), title2, director2, summary2, Integer.toString(time2), performer2, Float.toString(score2), sdFormat.format(date2), rate2};
 						model.addRow(list2);
 					}
 					
@@ -201,21 +202,37 @@ public class Movie extends JFrame{
 	}
 						
 
-	
+	//================ 여기부터 삭제 기능 ===========================================================	
 	class RemoveActionListener implements ActionListener{
+		
 		JTable table;
+		DAO del = new DAO();
+		
 		RemoveActionListener(JTable table){
 			this.table = table;
 		}
 		public void actionPerformed(ActionEvent e) {
-			int row = table.getSelectedRow();
+			int row = table.getSelectedRow();//선택한 행의 인덱스를 저장
 			if(row == -1)
 				return;
+			
+			Object val = table.getValueAt(row, 0);//행의 첫번째 열인 id를 읽어오기
+			int num = Integer.parseInt(val.toString());//int 타입의 값으로 저장
+			
+			try {
+				del.movieDeleteData(num);
+			}catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
 			
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
 			model.removeRow(row);		
 		}
 	}
+	
+	
+	//================ 여기까지 삭제 기능 ===========================================================	
 	
 	// select 찍어주는 메소드
 	
@@ -228,7 +245,7 @@ public class Movie extends JFrame{
 		ArrayList<DTO> dt=da.selectAll_movielist();
 		for (int i=0;i<dt.size();i++) {
 			DTO dt1 = dt.get(i);		
-			String [] list2 = {dt1.getTitle(), dt1.getDirector(), dt1.getSummary(),String.valueOf(dt1.getTime()),dt1.getPerformer(),String.valueOf(dt1.getScore()),String.valueOf(dt1.getDate()),String.valueOf(dt1.getRate())};
+			String [] list2 = {String.valueOf(dt1.getMovieNum()),dt1.getTitle(), dt1.getDirector(), dt1.getSummary(),String.valueOf(dt1.getTime()),dt1.getPerformer(),String.valueOf(dt1.getScore()),String.valueOf(dt1.getDate()),String.valueOf(dt1.getRate())};
 			model.addRow(list2);
 		}
 

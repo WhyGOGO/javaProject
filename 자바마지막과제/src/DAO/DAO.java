@@ -22,8 +22,8 @@ public class DAO {
 		Connection conn=null; 
 		try {
 			// 데이터베이스와 연결하는 객체
-			String user = "ysu";
-			String pw = "1234";
+			String user = "root";
+			String pw = "wjdduq1101!";
 			String url = "jdbc:mysql://localhost:3306/movielist";
 			
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -94,6 +94,7 @@ public class DAO {
 			
 			while(rs.next()) {
 				DTO dto = new DTO();
+				dto.setMovieNum(rs.getInt(1));
 				dto.setTitle(rs.getString(2));
 				dto.setDirector(rs.getString(3));
 				dto.setSummary(rs.getString(4));
@@ -133,6 +134,7 @@ public class DAO {
 				
 				while(rs.next()) {
 					DTO dto = new DTO();
+					dto.setMovieNum(rs.getInt(1));
 					dto.setTitle(rs.getString(2));
 					dto.setDirector(rs.getString(3));
 					dto.setSummary(rs.getString(4));
@@ -155,6 +157,22 @@ public class DAO {
 			}
 			return list;
 		}
+		
+	//삭제메소드
+	public void movieDeleteData(int num) {
+		try {
+			Connection conn = DAO();
+			String sql = "delete from movie where movie_id = ?";
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, num);
+			ps.executeUpdate();
+			
+			ps.close();
+			conn.close();
+		}catch(Exception e) {
+			
+		}
+	}
 		
 
 	private void dbClose() {
