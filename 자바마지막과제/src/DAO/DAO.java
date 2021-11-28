@@ -19,11 +19,12 @@ public class DAO {
 	
 	ResultSet rs = null; // 실행한 쿼리문의 값을 받는 객체
 	Statement st = null; 
-	
 	PreparedStatement ps = null; 
+	static Connection conn;
 	
 	public static Connection DAO() { //생성자 - 디비 연결 역할을 함
-		Connection conn=null; 
+		conn = null; 
+
 		try {
 			// 데이터베이스와 연결하는 객체
 			String user = "ysu";
@@ -54,7 +55,6 @@ public class DAO {
 	
 	public void movieInsertData(DTO data) {
 		try {
-			Connection conn=DAO();
 			String sql = "INSERT INTO movie(title,director,summary,time,performer,score,date,rate,image) values(?,?,?,?,?,?,?,?,?)";
 			FileInputStream fin = new FileInputStream(data.getImage());
 			
@@ -88,7 +88,6 @@ public class DAO {
 		ArrayList<DTO> list = new ArrayList<DTO>();
 		
 		try {
-			Connection conn=DAO();
 			String sql = "select * from movie where title like '"+title+"%' and \n"
 					+"director like '"+director+"%' and \n"
 					+"summary like '"+summary+"%' and \n"
@@ -134,7 +133,6 @@ public class DAO {
 			ArrayList<DTO> list = new ArrayList<DTO>();
 			
 			try {
-				Connection conn=DAO();
 				String sql = "select * from movie";
 				
 				ps = conn.prepareStatement(sql);
@@ -173,7 +171,6 @@ public class DAO {
 	//삭제메소드
 	public void movieDeleteData(int num) {
 		try {
-			Connection conn = DAO();
 			String sql = "delete from movie where movie_id = ?";
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, num);
@@ -188,7 +185,6 @@ public class DAO {
 	//이미지 삽입 메소드
 	public void insertImage(File file) {
 		try {
-			Connection conn = DAO();
 			FileInputStream fin = new FileInputStream(file);
 			String sql = "insert into movielist (image) values (?)";
 			ps = conn.prepareStatement(sql);
@@ -208,7 +204,6 @@ public class DAO {
 	//영화 정보 수정메소드
 	public void update_movieList(File file) {
 		try {
-			Connection conn = DAO();
 			FileInputStream fin = new FileInputStream(file);
 			String sql = "insert into movielist (image) values (?)";
 			ps = conn.prepareStatement(sql);
@@ -228,7 +223,6 @@ public class DAO {
 	
 	//사용자가 행을 클리간 이미지만 불러오기 
 			public ArrayList<DTO> select_image(int num) {
-				Connection conn=DAO();
 				ArrayList<DTO> list = new ArrayList<DTO>();
 				
 				try {
