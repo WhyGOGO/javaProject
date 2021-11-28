@@ -70,9 +70,6 @@ public class DAO {
 			ps.setBinaryStream(9,fin,(int)data.getImage().length());
 			ps.executeUpdate();
 			
-			
-			ps.close();
-			conn.close();
 		}
 		catch (Exception e) {
 			// TODO: handle exception
@@ -114,9 +111,6 @@ public class DAO {
 				list.add(dto);
 			}
 			
-			
-			ps.close();
-			conn.close();
 		}
 		catch (Exception e) {
 			// TODO: handle exception
@@ -176,10 +170,11 @@ public class DAO {
 			ps.setInt(1, num);
 			ps.executeUpdate();
 			
-			ps.close();
-			conn.close();
 		}catch(Exception e) {
 			
+		}
+		finally {
+			dbClose();
 		}
 	}
 	//이미지 삽입 메소드
@@ -191,8 +186,7 @@ public class DAO {
 			ps.setBinaryStream(1, fin,(int)file.length());
 			ps.executeUpdate();
 			
-			ps.close();
-			conn.close();
+
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -209,9 +203,7 @@ public class DAO {
 			ps = conn.prepareStatement(sql);
 			ps.setBinaryStream(1, fin,(int)file.length());
 			ps.executeUpdate();
-			
-			ps.close();
-			conn.close();
+
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
