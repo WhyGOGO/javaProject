@@ -26,7 +26,7 @@ public class Movie extends JFrame{
 	private JTextField title,director,summary,time,performer,score,date,rate;
 	private JButton images;
 	private JTextField imageName;
-	JButton btn_update,btn_selectedValue;
+	JButton btn_selectedValue;
 	
 	
 	public Movie() {
@@ -63,7 +63,7 @@ public class Movie extends JFrame{
 		
 		JButton button1 = new JButton("추가");
 		btn_selectedValue = new JButton("값 가져오기");
-		btn_update = new JButton("수정");
+		JButton btn_update = new JButton("수정");
 		JButton b1 = new JButton("검색");
 		JButton button2 = new JButton("삭제");
 		panel.add(new JLabel("제목"));
@@ -166,6 +166,10 @@ public class Movie extends JFrame{
 			}
 		});
 									//================ 여기까지 검색기능 ===========	
+		
+		btn_update.addActionListener(new ModifyActionListener(title,director,summary,time,performer,score,date,rate,imageName));
+		
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
@@ -322,6 +326,97 @@ public class Movie extends JFrame{
 		}
 	}
 	//=========================== 여기까지 이미지 입력하는 버튼 ====================================
+	
+	//=========================== 여기부터 수정기능 버튼 ====================================
+	
+	public class ModifyActionListener implements ActionListener {
+		
+		DAO da = new DAO();
+		JTextField title,director,summary,time,performer,score,date,rate,imageName;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		ModifyActionListener(JTextField title,
+				JTextField director,JTextField summary
+				,JTextField time,JTextField performer
+				,JTextField score,JTextField date
+				,JTextField rate, JTextField imageName){
+			
+			this.title=title;
+			this.director=director;
+			this.summary=summary;
+			this.time=time;
+			this.performer=performer;
+			this.score=score;
+			this.date=date;
+			this.rate=rate;
+			this.imageName = imageName;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String m_title = "";
+			String m_director = "";
+			String m_summary = "";
+			int m_time = 0;
+			String m_actor = "";
+			float m_score = 0;
+			Date m_date = null;
+			String m_rate = "";
+			
+			int row = table.getSelectedRow();//선택한 행의 인덱스를 저장
+			if(row == -1)
+				return;
+			
+			Object val = table.getValueAt(row, 0);//행의 첫번째 열인 id를 읽어오기
+			int num = Integer.parseInt(val.toString());//int 타입의 값으로 저장
+			try {
+				m_title = title.getText();
+				m_director = director.getText();
+				m_summary = summary.getText();
+				if(time.getText().length()>0) {
+					m_time = Integer.parseInt(time.getText());
+				}
+				m_actor = performer.getText();
+				if (score.getText().length()>0) {
+					m_score = Float.parseFloat(score.getText());
+				}
+				m_date = null;
+				m_rate = rate.getText();
+				if(date.getText().length()>0) {
+					m_date = new Date(sdf.parse(date.getText()).getTime());
+				}
+				
+				if (m_title.length()>0) {
+					da.updateTitle(m_title, num);
+				}else {return;}
+				if (m_director.length()>0) {
+					da.updateDirect(m_director, num);
+				}else {return;}
+				if (m_summary.length()>0) {
+					da.updateSummary(m_summary, num);
+				}else {return;}
+				if (m_time>0) 
+					da.updateTime(m_time, num);
+				if (m_actor.length()>0) {
+					da.updateActor(m_actor, num);
+				}else {return;}
+				if (m_score>0) {
+					da.updateScore(m_score, num);
+				}else {return;}
+				if (m_date!=null) {
+					da.updateDate(m_date, num);
+				}else {return;}
+				if (m_rate.length()>0) {
+					da.updateRate(m_rate, num);
+				}else {return;}
+				
+			}catch (Exception e2) {
+				e2.printStackTrace();
+			}
+				
+		}
+		
+	}
 
 	
 	//=========================== 값가져오는 부분 ====================================
