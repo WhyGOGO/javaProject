@@ -28,8 +28,8 @@ public class DAO {
 
 		try {
 			// 데이터베이스와 연결하는 객체
-			String user = "root";
-			String pw = "wjdduq1101!";
+			String user = "ysu";
+			String pw = "1234";
 			String url = "jdbc:mysql://localhost:3306/movielist";
 			
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -197,10 +197,12 @@ public class DAO {
 	}
 	
 	//이미지 수정
-	public void updateImage(File file, int num) {
+	public void updateImage(File file,int num) {
 		try {
+			System.out.println(num);
+
 			FileInputStream fin = new FileInputStream(file);
-			String sql = "update movie set image = ? where = ?";
+			String sql = "update movie set image = ? where movie_id = ?";
 			ps = conn.prepareStatement(sql);
 			ps.setBinaryStream(1, fin,(int)file.length());
 			ps.setInt(2, num);

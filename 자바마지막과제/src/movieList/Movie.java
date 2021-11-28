@@ -22,7 +22,8 @@ public class Movie extends JFrame{
 	DefaultTableModel model = new DefaultTableModel(colNames,0);
 	JTable table = new JTable(model);
 	private JLabel imageLabel;
-	File selectedFile;
+    File selectedFile;
+    JFileChooser fileChooser;
 	private JTextField title,director,summary,time,performer,score,date,rate;
 	private JButton images;
 	private JTextField imageName;
@@ -315,7 +316,7 @@ public class Movie extends JFrame{
 			// TODO Auto-generated method stub
 			
 			JFrame window = new JFrame();
-			JFileChooser fileChooser = new JFileChooser();
+			 fileChooser = new JFileChooser();
 			int result = fileChooser.showOpenDialog(window);
 			selectedFile = fileChooser.getSelectedFile();
 			
@@ -334,12 +335,13 @@ public class Movie extends JFrame{
 		DAO da = new DAO();
 		JTextField title,director,summary,time,performer,score,date,rate,imageName;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		File selectedFile;
 		
 		ModifyActionListener(JTextField title,
 				JTextField director,JTextField summary
 				,JTextField time,JTextField performer
 				,JTextField score,JTextField date
-				,JTextField rate, JTextField imageName){
+				,JTextField rate,JTextField imageName){
 			
 			this.title=title;
 			this.director=director;
@@ -350,6 +352,7 @@ public class Movie extends JFrame{
 			this.date=date;
 			this.rate=rate;
 			this.imageName = imageName;
+
 		}
 
 		@Override
@@ -409,11 +412,18 @@ public class Movie extends JFrame{
 				if (m_rate.length()>0) {
 					da.updateRate(m_rate, num);
 				}else {return;}
-				
+				if (imageName.getText().length() >0) {
+					da.updateImage(fileChooser.getSelectedFile(),num);
+					
+				}else {System.out.println("이미지 못읽음"); return; }
+
 			}catch (Exception e2) {
 				e2.printStackTrace();
 			}
-				
+			finally {
+				printAll();	//일단 전체보여주기	
+			}
+
 		}
 		
 	}
