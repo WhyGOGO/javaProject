@@ -1,18 +1,15 @@
 package movieList;
 
 import java.awt.*;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.File;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -25,9 +22,8 @@ public class Movie extends JFrame{
 	DefaultTableModel model = new DefaultTableModel(colNames,0);
 	JTable table = new JTable(model);
 	private JLabel imageLabel;
-	private JFileChooser fileChooser;
 	File selectedFile;
-	private JTextField movieNum,title,director,summary,time,performer,score,date,rate;
+	private JTextField title,director,summary,time,performer,score,date,rate;
 	private JButton images;
 	private JTextField imageName;
 	JButton btn_update,btn_selectedValue;
@@ -105,8 +101,7 @@ public class Movie extends JFrame{
 
 //===================================마우스 클릭했을때 이미지 불러오기 ==================
 		table.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				DTO dt1 = new DTO();
+			public void mousePressed(MouseEvent e) {
 				DAO da = new DAO();
 				int index = table.getSelectedRow();
 				Object movienum = table.getValueAt(index, 0);
